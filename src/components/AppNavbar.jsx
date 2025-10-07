@@ -23,16 +23,16 @@ export default function AppNavbar() {
         setOpen(newOpen);
     };
 
-const navItems = [
-    { text: "Home", to: "/", icon: <InboxIcon /> },
-    { text: "Add Product", to: "/add", icon: <MailIcon /> },
-    {
-        text: "About",
-        to: "/about",
-        icon: <InboxIcon />,
-        tooltip: "Gadget Catalog is your one-stop destination to explore the latest and greatest tech products. From high-performance laptops and sleek smartphones to premium headphones, our app helps you discover, compare, and keep track of your favorite gadgets. Each product card provides essential details such as brand, specifications, price, and an image for a complete overview."
-    }
-];
+    const navItems = [
+        { text: "Home", to: "/", icon: <InboxIcon /> },
+        { text: "Add Product", to: "/add", icon: <MailIcon /> },
+        {
+            text: "About",
+            to: "/about",
+            icon: <InboxIcon />,
+            tooltip: "Gadget Catalog is your one-stop destination to explore the latest and greatest tech products. From high-performance laptops and sleek smartphones to premium headphones, our app helps you discover, compare, and keep track of your favorite gadgets. Each product card provides essential details such as brand, specifications, price, and an image for a complete overview."
+        }
+    ];
 
     const DrawerList = (
         <Box sx={{ width: 260, backgroundColor: "#2f3e46", height: "100%", color: "white" }} role="presentation" onClick={toggleDrawer(false)} onKeyDown={toggleDrawer(false)}>
@@ -80,7 +80,9 @@ const navItems = [
         From high-performance laptops and sleek smartphones to premium headphones, our app helps you 
         discover, compare, and keep track of your favorite gadgets. Each product card provides essential 
         details such as brand, specifications, price, and an image for a complete overview.">
-                                <Nav.Link as={Link} className="text-light"><b>About</b></Nav.Link>
+                                <Nav.Link as={Link} to="/about" className="text-light">
+                                    About
+                                </Nav.Link>
                             </Tooltip>
 
                         </Nav>

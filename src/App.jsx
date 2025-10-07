@@ -7,6 +7,7 @@ import Home from "./pages/Home";
 import AddProduct from "./pages/AddProduct";
 import EditProduct from "./pages/EditProduct";
 import ViewProduct from "./pages/ViewProduct";
+import About from './pages/About';
 
 // Sample products with your images
 const SAMPLE = [
@@ -65,6 +66,7 @@ export default function App() {
             <AppNavbar />
             <Container className="mt-4 mb-5 container-lg">
                 <Routes>
+                    <Route path="/about" element={<About />} />
                     <Route path="/" element={<Home products={products} onDelete={deleteProduct} brands={brands} />} />
                     <Route path="/add" element={<AddProduct onAdd={addProduct} />} />
                     <Route path="/edit/:id" element={<EditProduct products={products} onUpdate={updateProduct} />} />
