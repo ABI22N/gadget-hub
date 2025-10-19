@@ -1,4 +1,3 @@
-// Footer.jsx
 import React from "react";
 import { FcBusinessContact } from "react-icons/fc";
 import { PiMailboxDuotone } from "react-icons/pi";
@@ -16,10 +15,10 @@ export default function Footer() {
       }}
     >
       <div style={{ fontSize: "14px" }}>
-        &copy; {new Date().getFullYear()} <b>GadgetHub. All rights reserved.2025</b>
+        &copy; {new Date().getFullYear()} <b>GadgetHub. All rights reserved.</b>
       </div>
 
-      <FcBusinessContact className="me-2 fs-5" /> <span className="small">910-555-1234</span> | <PiMailboxDuotone className="me-2 fs-5" /> <span className="small">info@gadgethub.com</span >
+      <FcBusinessContact className="me-2 fs-5" /> <span className="small">910-555-1234</span> | <PiMailboxDuotone className="me-2 fs-5" /> <span className="small">info@gadgethub.com</span>
     </footer>
   );
 }

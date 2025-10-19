@@ -1,89 +1,130 @@
-import React, { useMemo, useState } from 'react';
+
+import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { Alert } from 'react-bootstrap';
 import FilterBar from '../components/FilterBar';
 import ProductCard from '../components/ProductCard';
+import { getAllGadgetAPI, deleteGadgetAPI } from '../service/allAPI';
 
-export default function Home({ products = [], onDelete = () => {} }) {
-  // committed/active filters used for actual filtering & sorting
-  const [activeFilters, setActiveFilters] = useState({ brand: '', minPrice: '', maxPrice: '', sortBy: '' });
+export default function Home() {
+  const [products, setProducts] = useState([]);
+  const [activeFilters, setActiveFilters] = useState({
+    brand: '',
+    minPrice: '',
+    maxPrice: '',
+    sortBy: '',
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  // helper to robustly parse price-like values
+  // Load products from API
+  const loadProducts = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const res = await getAllGadgetAPI();
+      const data = res && res.data ? res.data : [];
+      setProducts(Array.isArray(data) ? data : []);
+    } catch (err) {
+      setError('Failed to load products: ' + (err.response?.data?.message || err.message));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadProducts();
+  }, []);
+
+  // Delete handler
+  const handleDelete = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this product?')) return;
+    setError('');
+    try {
+      const res = await deleteGadgetAPI(id);
+      if (res?.status >= 400 || res instanceof Error || res.name === 'AxiosError') {
+        throw res;
+      }
+      setProducts((prev) => prev.filter((p) => String(p.id) !== String(id)));
+    } catch (err) {
+      setError('Failed to delete product: ' + (err.response?.data?.message || err.message));
+    }
+  };
+
+  // Parse price
   const parsePrice = (val) => {
     if (val == null || val === '') return 0;
     if (typeof val === 'number' && isFinite(val)) return val;
     if (typeof val === 'string') {
       const cleaned = val.replace(/[^\d.\-]/g, '').replace(/,/g, '');
       const n = parseFloat(cleaned);
-      return Number.isFinite(n) ? n : 0;
+      return isNaN(n) ? 0 : n;
     }
     return 0;
   };
 
-  // unique brand list for FilterBar
+  // Derive brand list
   const brands = useMemo(() => {
-    const s = new Set();
-    products.forEach(p => p.brand && s.add(p.brand));
-    return Array.from(s).sort((a, b) => a.localeCompare(b));
+    const set = new Set();
+    products.forEach((p) => {
+      if (p.brand) set.add(p.brand);
+    });
+    return Array.from(set);
   }, [products]);
 
-  // apply activeFilters to products
+  // Filtered + sorted products
   const filtered = useMemo(() => {
-    let list = products.slice();
+    let arr = [...products];
+    const { brand, minPrice, maxPrice, sortBy } = activeFilters;
 
-    // brand
-    if (activeFilters.brand) {
-      list = list.filter(p => (p.brand || '').toLowerCase() === (activeFilters.brand || '').toLowerCase());
+    if (brand) {
+      arr = arr.filter((p) => String(p.brand).toLowerCase() === String(brand).toLowerCase());
     }
 
-    const min = (activeFilters.minPrice === '' || activeFilters.minPrice == null) ? null : parsePrice(activeFilters.minPrice);
-    const max = (activeFilters.maxPrice === '' || activeFilters.maxPrice == null) ? null : parsePrice(activeFilters.maxPrice);
+    const min = parsePrice(minPrice);
+    const max = parsePrice(maxPrice);
+    if (min) arr = arr.filter((p) => parsePrice(p.price) >= min);
+    if (max) arr = arr.filter((p) => parsePrice(p.price) <= max);
 
-    if (min !== null) list = list.filter(p => parsePrice(p.price) >= min);
-    if (max !== null) list = list.filter(p => parsePrice(p.price) <= max);
-
-    switch (activeFilters.sortBy) {
-      case 'priceAsc':
-        list.sort((a, b) => parsePrice(a.price) - parsePrice(b.price));
-        break;
-      case 'priceDesc':
-        list.sort((a, b) => parsePrice(b.price) - parsePrice(a.price));
-        break;
-      case 'brandAsc':
-        list.sort((a, b) => (a.brand || '').toLowerCase().localeCompare((b.brand || '').toLowerCase()));
-        break;
-      case 'brandDesc':
-        list.sort((a, b) => (b.brand || '').toLowerCase().localeCompare((a.brand || '').toLowerCase()));
-        break;
-      default:
-        break;
+    if (sortBy === 'priceAsc') {
+      arr.sort((a, b) => parsePrice(a.price) - parsePrice(b.price));
+    } else if (sortBy === 'priceDesc') {
+      arr.sort((a, b) => parsePrice(b.price) - parsePrice(a.price));
+    } else if (sortBy === 'brandAsc') {
+      arr.sort((a, b) => String(a.brand || '').localeCompare(String(b.brand || '')));
+    } else if (sortBy === 'brandDesc') {
+      arr.sort((a, b) => String(b.brand || '').localeCompare(String(a.brand || '')));
+    } else if (sortBy) {
+      console.warn(`Unrecognized sortBy value: ${sortBy}`);
     }
 
-    return list;
+    return arr;
   }, [products, activeFilters]);
 
   return (
-    <div className="home-page" style={{ padding: '1rem 2rem', backgroundColor: 'var(--bg-dark)' }}>
-
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-        <h2>Products</h2>
-        <Link to="/add"><button className="btn btn-primary">Add product</button></Link>
+    <div style={{ padding: 12 }}>
+      {error && <Alert variant="danger" onClose={() => setError('')} dismissible>{error}</Alert>}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
+        <h2>Gadget Catalog</h2>
+        <Link to="/add">
+          <button className="btn btn-primary">Add Product</button>
+        </Link>
       </div>
-
-      {/* Pass activeFilters as initialFilters. Apply/Reset events update activeFilters. */}
       <FilterBar
         brands={brands}
         initialFilters={activeFilters}
-        onApply={(newFilters) => setActiveFilters(newFilters)}
+        onApply={(filters) => setActiveFilters(filters)}
         onReset={() => setActiveFilters({ brand: '', minPrice: '', maxPrice: '', sortBy: '' })}
       />
-
-      <div className="product-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 12 }}>
-        {filtered.length === 0 ? (
+      {loading && <div style={{ padding: 12 }}>Loading products...</div>}
+      <div
+        className="product-grid"
+        style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '24px', marginTop: '16px' }}
+      >
+        {filtered.length === 0 && !loading ? (
           <div style={{ padding: 20 }}>No products match the current filters.</div>
         ) : (
-          filtered.map((p) => (
-            <ProductCard key={p.id} product={p} onDelete={() => onDelete(p.id)} />
-          ))
+          filtered.map((p) => <ProductCard key={p.id} product={p} onDelete={handleDelete} />)
         )}
       </div>
     </div>

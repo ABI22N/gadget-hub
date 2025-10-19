@@ -1,47 +1,97 @@
+
 import React, { useState } from 'react';
-import { Card, Button, Modal } from 'react-bootstrap';
+import { Card, Button, Modal, Alert } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { FaTrash, FaEdit, FaEye } from 'react-icons/fa';
+import { deleteGadgetAPI } from '../service/allAPI';
 
-
-const FALLBACK = 'data:image/jpeg;base64,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';
-
+const FALLBACK = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD...';
 
 export default function ProductCard({ product, onDelete }) {
-    const [show, setShow] = useState(false);
-    const handleDelete = () => { setShow(false); onDelete && onDelete(product.id); };
+  const [show, setShow] = useState(false);
+  const [error, setError] = useState('');
 
+  const handleDelete = async () => {
+    try {
+      const response = await deleteGadgetAPI(product.id);
+      if (response?.status >= 400 || response instanceof Error || response.name === 'AxiosError') {
+        throw response;
+      }
+      setShow(false);
+      setError('');
+      onDelete && onDelete(product.id);
+    } catch (err) {
+      setError('Error deleting: ' + (err.response?.data?.message || err.message));
+    }
+  };
 
-    return (
-        <>
-            <Card className="h-100 shadow-sm">
-                <div style={{ height: 200, overflow: 'hidden' }}>
-                    <Card.Img src={product.image || FALLBACK} alt={product.name} className="card-img-top" onError={(e) => e.currentTarget.src = FALLBACK} />
-                </div>
-                <Card.Body className="d-flex flex-column">
-                    <Card.Title>{product.name}</Card.Title>
-                    <Card.Subtitle className="mb-2 text-muted">{product.brand}</Card.Subtitle>
-                    <div className="mb-2"><strong>${product.price}</strong></div>
-                    <Card.Text className="text-muted small" style={{ flex: 1 }}>{product.specs}</Card.Text>
-
-
-                    <div className="d-flex gap-2">
-                        <Button as={Link} to={`/view/${product.id}`} variant="info" size="sm" className="flex-fill"><FaEye /> View</Button>
-                        <Button as={Link} to={`/edit/${product.id}`} variant="warning" size="sm" className="flex-fill"><FaEdit /> Edit</Button>
-                        <Button variant="danger" size="sm" onClick={() => setShow(true)} className="flex-fill"><FaTrash /> Delete</Button>
-                    </div>
-                </Card.Body>
-            </Card>
-
-
-            <Modal show={show} onHide={() => setShow(false)} centered>
-                <Modal.Header closeButton><Modal.Title>Delete</Modal.Title></Modal.Header>
-                <Modal.Body>Are you sure you want to delete <strong>{product.name}</strong>?</Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={() => setShow(false)}>Cancel</Button>
-                    <Button variant="danger" onClick={handleDelete}>Delete</Button>
-                </Modal.Footer>
-            </Modal>
-        </>
-    );
+  return (
+    <>
+      <style>
+        {`
+          .product-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+          }
+          .product-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            border-color: #0ea5a4 !important;
+            z-index: 1;
+          }
+        `}
+      </style>
+      {error && (
+        <Alert variant="danger" onClose={() => setError('')} dismissible>
+          {error}
+        </Alert>
+      )}
+      <Card className="h-100 shadow-sm product-card" style={{ border: '1px solid #dee2e6' }}>
+        <div style={{ height: 200, overflow: 'hidden' }}>
+          <Card.Img
+            src={product.image || FALLBACK}
+            alt={product.name}
+            className="card-img-top"
+            onError={(e) => (e.currentTarget.src = FALLBACK)}
+          />
+        </div>
+        <Card.Body className="d-flex flex-column">
+          <Card.Title>{product.name}</Card.Title>
+          <Card.Subtitle className="mb-2 text-muted">{product.brand}</Card.Subtitle>
+          <div className="mb-2">
+            <strong>₹{product.price}</strong>
+          </div>
+          <Card.Text className="text-muted small" style={{ flex: 1 }}>
+            {product.specs}
+          </Card.Text>
+          <div className="d-flex gap-2">
+            <Button as={Link} to={`/view/${product.id}`} variant="info" size="sm" className="flex-fill">
+              <FaEye /> View
+            </Button>
+            <Button as={Link} to={`/edit/${product.id}`} variant="warning" size="sm" className="flex-fill">
+              <FaEdit /> Edit
+            </Button>
+            <Button variant="danger" size="sm" onClick={() => setShow(true)} className="flex-fill">
+              <FaTrash /> Delete
+            </Button>
+          </div>
+        </Card.Body>
+      </Card>
+      <Modal show={show} onHide={() => setShow(false)} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Delete</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Are you sure you want to delete <strong>{product.name}</strong>?
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShow(false)}>
+            Cancel
+          </Button>
+          <Button variant="danger" onClick={handleDelete}>
+            Delete
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    </>
+  );
 }

@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Navbar, Container, Nav } from "react-bootstrap";
 import { Link } from "react-router-dom";
@@ -16,83 +17,83 @@ import { IoDiamondSharp } from "react-icons/io5";
 import Tooltip from '@mui/material/Tooltip';
 
 export default function AppNavbar() {
-    const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(false);
 
-    const toggleDrawer = (newOpen) => (event) => {
-        if (event && event.type === "keydown" && (event.key === "Tab" || event.key === "Shift")) return;
-        setOpen(newOpen);
-    };
+  const toggleDrawer = (newOpen) => (event) => {
+    if (event && event.type === "keydown" && (event.key === "Tab" || event.key === "Shift")) return;
+    setOpen(newOpen);
+  };
 
-    const navItems = [
-        { text: "Home", to: "/", icon: <InboxIcon /> },
-        { text: "Add Product", to: "/add", icon: <MailIcon /> },
-        {
-            text: "About",
-            to: "/about",
-            icon: <InboxIcon />,
-            tooltip: "Gadget Catalog is your one-stop destination to explore the latest and greatest tech products. From high-performance laptops and sleek smartphones to premium headphones, our app helps you discover, compare, and keep track of your favorite gadgets. Each product card provides essential details such as brand, specifications, price, and an image for a complete overview."
-        }
-    ];
+  const navItems = [
+    { text: "Home", to: "/", icon: <InboxIcon /> },
+    { text: "Add Product", to: "/add", icon: <MailIcon /> },
+    {
+      text: "About",
+      to: "/about",
+      icon: <InboxIcon />,
+      tooltip: "Gadget Catalog is your one-stop destination to explore the latest and greatest tech products. From high-performance laptops and sleek smartphones to premium headphones, our app helps you discover, compare, and keep track of your favorite gadgets. Each product card provides essential details such as brand, specifications, price, and an image for a complete overview."
+    }
+  ];
 
-    const DrawerList = (
-        <Box sx={{ width: 260, backgroundColor: "#4f8ac5ff", height: "100%", color: "white" }} role="presentation" onClick={toggleDrawer(false)} onKeyDown={toggleDrawer(false)}>
-            <List>
-                {navItems.map((item) => (
-                    <ListItem key={item.text} disablePadding>
-                        {item.tooltip ? (
-                            <Tooltip title={item.tooltip}>
-                                <ListItemButton component={Link} to={item.to} sx={{ color: "white" }}>
-                                    <ListItemIcon sx={{ color: "white" }}>{item.icon}</ListItemIcon>
-                                    <ListItemText primary={item.text} />
-                                </ListItemButton>
-                            </Tooltip>
-                        ) : (
-                            <ListItemButton component={Link} to={item.to} sx={{ color: "white" }}>
-                                <ListItemIcon sx={{ color: "white" }}>{item.icon}</ListItemIcon>
-                                <ListItemText primary={item.text} />
-                            </ListItemButton>
-                        )}
-                    </ListItem>
-                ))}
-            </List>
-        </Box>
-    );
+  const DrawerList = (
+    <Box sx={{ width: 260, backgroundColor: "#4f8ac5ff", height: "100%", color: "white" }} role="presentation" onClick={toggleDrawer(false)} onKeyDown={toggleDrawer(false)}>
+      <List>
+        {navItems.map((item) => (
+          <ListItem key={item.text} disablePadding>
+            {item.tooltip ? (
+              <Tooltip title={item.tooltip}>
+                <ListItemButton component={Link} to={item.to} sx={{ color: "white" }}>
+                  <ListItemIcon sx={{ color: "white" }}>{item.icon}</ListItemIcon>
+                  <ListItemText primary={item.text} />
+                </ListItemButton>
+              </Tooltip>
+            ) : (
+              <ListItemButton component={Link} to={item.to} sx={{ color: "white" }}>
+                <ListItemIcon sx={{ color: "white" }}>{item.icon}</ListItemIcon>
+                <ListItemText primary={item.text} />
+              </ListItemButton>
+            )}
+          </ListItem>
+        ))}
+      </List>
+    </Box>
+  );
 
-    return (
-        <>
-            <Navbar expand="lg" sticky="top" variant="dark" style={{ backgroundColor: "#4f8ac5ff" }}>
-                <Container>
-                    <Navbar.Brand as={Link} to="/" className="d-flex align-items-center text-light">
-                        <IoDiamondSharp className="me-2 fs-2" />  <b>GadgetHub</b>
-                    </Navbar.Brand>
+  return (
+    <>
+      <Navbar expand="lg" sticky="top" variant="dark" style={{ backgroundColor: "#4f8ac5ff" }}>
+        <Container>
+          <Navbar.Brand as={Link} to="/" className="d-flex align-items-center text-light">
+            <IoDiamondSharp className="me-2 fs-2" /> <b>GadgetHub</b>
+          </Navbar.Brand>
 
-                    <div className="d-lg-none">
-                        <IconButton color="inherit" aria-label="open drawer" edge="start" onClick={toggleDrawer(true)}>
-                            <MenuIcon style={{ color: "white" }} />
-                        </IconButton>
-                    </div>
+          <div className="d-lg-none">
+            <IconButton color="inherit" aria-label="open drawer" edge="start" onClick={toggleDrawer(true)}>
+              <MenuIcon style={{ color: "white" }} />
+            </IconButton>
+          </div>
 
-                    <Navbar.Collapse className="d-none d-lg-flex justify-content-end">
-                        <Nav>
-                            <Nav.Link as={Link} to="/" className="text-light"><b>Home</b></Nav.Link>
-                            <Nav.Link as={Link} to="/add" className="text-light"><b>Add Product</b></Nav.Link>
-                            <Tooltip title="Gadget Catalog is your one-stop destination to explore the latest and greatest tech products. 
-        From high-performance laptops and sleek smartphones to premium headphones, our app helps you 
-        discover, compare, and keep track of your favorite gadgets. Each product card provides essential 
-        details such as brand, specifications, price, and an image for a complete overview.">
-                                <Nav.Link as={Link} to="/about" className="text-light">
-                                    About
-                                </Nav.Link>
-                            </Tooltip>
+          <Navbar.Collapse className="d-none d-lg-flex justify-content-end">
+            <Nav>
+              <Nav.Link as={Link} to="/" className="text-light"><b>Home</b></Nav.Link>
+              <Nav.Link as={Link} to="/add" className="text-light"><b>Add Product</b></Nav.Link>
+              <Tooltip title="Gadget Catalog is your one-stop destination to explore the latest and greatest tech products. 
+              From high-performance laptops and sleek smartphones to premium headphones, our app helps you 
+              discover, compare, and keep track of your favorite gadgets. Each product card provides essential 
+              details such as brand, specifications, price, and an image for a complete overview.">
+                <Nav.Link as={Link} to="/about" className="text-light">
+                  About
+                </Nav.Link>
+              </Tooltip>
+            </Nav>
+          </Navbar.Collapse>
+        </Container>
+      </Navbar>
 
-                        </Nav>
-                    </Navbar.Collapse>
-                </Container>
-            </Navbar>
-
-            <Drawer anchor="left" open={open} onClose={toggleDrawer(false)}>
-                {DrawerList}
-            </Drawer>
-        </>
-    );
+      <Drawer anchor="left" open={open} onClose={toggleDrawer(false)}>
+        {DrawerList}
+      </Drawer>
+    </>
+  );
 }
+
