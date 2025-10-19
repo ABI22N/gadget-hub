@@ -35,7 +35,7 @@ export default function AppNavbar() {
     ];
 
     const DrawerList = (
-        <Box sx={{ width: 260, backgroundColor: "#2f3e46", height: "100%", color: "white" }} role="presentation" onClick={toggleDrawer(false)} onKeyDown={toggleDrawer(false)}>
+        <Box sx={{ width: 260, backgroundColor: "#4f8ac5ff", height: "100%", color: "white" }} role="presentation" onClick={toggleDrawer(false)} onKeyDown={toggleDrawer(false)}>
             <List>
                 {navItems.map((item) => (
                     <ListItem key={item.text} disablePadding>
@@ -60,7 +60,7 @@ export default function AppNavbar() {
 
     return (
         <>
-            <Navbar expand="lg" sticky="top" variant="dark" style={{ backgroundColor: "#34414a" }}>
+            <Navbar expand="lg" sticky="top" variant="dark" style={{ backgroundColor: "#4f8ac5ff" }}>
                 <Container>
                     <Navbar.Brand as={Link} to="/" className="d-flex align-items-center text-light">
                         <IoDiamondSharp className="me-2 fs-2" />  <b>GadgetHub</b>

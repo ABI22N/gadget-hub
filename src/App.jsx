@@ -67,6 +67,7 @@ export default function App() {
             <Container className="mt-4 mb-5 container-lg">
                 <Routes>
                     <Route path="/about" element={<About />} />
+                    
                     <Route path="/" element={<Home products={products} onDelete={deleteProduct} brands={brands} />} />
                     <Route path="/add" element={<AddProduct onAdd={addProduct} />} />
                     <Route path="/edit/:id" element={<EditProduct products={products} onUpdate={updateProduct} />} />

@@ -64,7 +64,7 @@ export default function About() {
         </div>
 
         <hr style={{ margin: "30px 0", opacity: 0.3 }} />
-
+          
         <p style={{ textAlign: "center", color: "#6b7280", fontSize: "14px" }}>
           © {new Date().getFullYear()} GadgetHub. All Rights Reserved.
         </p>

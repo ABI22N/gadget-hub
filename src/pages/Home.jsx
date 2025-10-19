@@ -1,120 +1,91 @@
-import React from "react";
-import { Card, Button, Row, Col } from "react-bootstrap";
-import { Link } from "react-router-dom";
-import { FaPlus } from "react-icons/fa";
+import React, { useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
+import FilterBar from '../components/FilterBar';
+import ProductCard from '../components/ProductCard';
 
-const Home = ({ products, onDelete }) => {
-    return (
-        <div style={{ position: "relative", paddingBottom: "60px" }}>
-            <h2 className="mb-4">Gadget / Tech Products</h2>
-            <Row className="g-4">
-                {products.map((product) => (
-                    <Col key={product.id} md={6} lg={3}>
-                        <Card
-                            className="h-100 d-flex flex-column"
-                            style={{
-                                backgroundColor: "#2a2a2e",
-                                color: "white",
-                                border: "1px solid #444",
-                                borderRadius: "10px",
-                                boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
-                                transition: "transform 0.2s",
+export default function Home({ products = [], onDelete = () => {} }) {
+  // committed/active filters used for actual filtering & sorting
+  const [activeFilters, setActiveFilters] = useState({ brand: '', minPrice: '', maxPrice: '', sortBy: '' });
 
-                                height: "100%",
-                                marginLeft: "15px",
-                                marginRight: "15px",
+  // helper to robustly parse price-like values
+  const parsePrice = (val) => {
+    if (val == null || val === '') return 0;
+    if (typeof val === 'number' && isFinite(val)) return val;
+    if (typeof val === 'string') {
+      const cleaned = val.replace(/[^\d.\-]/g, '').replace(/,/g, '');
+      const n = parseFloat(cleaned);
+      return Number.isFinite(n) ? n : 0;
+    }
+    return 0;
+  };
 
-                            
-                            }}
-                        >
-                            <Card.Img
-                                variant="top"
-                                src={product.image}
-                                alt={product.name}
-                                style={{
-                                    width: "100%",
-                                    height: "200px",
-                                    
-                                    objectFit: "contain",
-                                    backgroundColor: "#1f1f23",
-                                    padding: "10px",
-                                    borderBottom: "1px solid #444",
-                                    borderTopLeftRadius: "10px",
-                                    borderTopRightRadius: "10px",
-                                    
+  // unique brand list for FilterBar
+  const brands = useMemo(() => {
+    const s = new Set();
+    products.forEach(p => p.brand && s.add(p.brand));
+    return Array.from(s).sort((a, b) => a.localeCompare(b));
+  }, [products]);
 
-                                }}
-                            />
+  // apply activeFilters to products
+  const filtered = useMemo(() => {
+    let list = products.slice();
 
-                            <Card.Body className="d-flex flex-column justify-content-between mt-auto">
-                                <div>
-                                    <Card.Title>{product.name}</Card.Title>
-                                    <Card.Text className="product-brand">{product.brand}</Card.Text>
-                                    <Card.Text className="product-price">₹{product.price}</Card.Text>
-                                    <Card.Text>{product.specs}</Card.Text>
-                                </div>
+    // brand
+    if (activeFilters.brand) {
+      list = list.filter(p => (p.brand || '').toLowerCase() === (activeFilters.brand || '').toLowerCase());
+    }
 
-                                <div className="d-flex justify-content-between mt-3">
-                                    <Button
-                                        size="lg"
-                                        style={{ flex: 1, marginRight: "5px" }}
-                                        variant="primary"
-                                        as={Link}
-                                        to={`/view/${product.id}`}
-                                    >
-                                        View
-                                    </Button>
-                                    <Button
-                                        size="lg"
-                                        style={{ flex: 1, marginLeft: "5px" }}
-                                        variant="danger"
-                                        onClick={() => onDelete(product.id)}
-                                    >
-                                        Delete
-                                    </Button>
-                                </div>
-                            </Card.Body>
-                        </Card>
-                    </Col>
-                ))}
-            </Row>
+    const min = (activeFilters.minPrice === '' || activeFilters.minPrice == null) ? null : parsePrice(activeFilters.minPrice);
+    const max = (activeFilters.maxPrice === '' || activeFilters.maxPrice == null) ? null : parsePrice(activeFilters.maxPrice);
 
-            {/* Floating Add Button */}
-            {/* Floating Add Button */}
-            <Link to="/add">
-                <Button
-                    style={{
-                        position: "fixed",
-                        bottom: "30px",
-                        right: "30px",
-                        borderRadius: "50%",
-                        width: "60px",
-                        height: "60px",
-                        fontSize: "24px",
-                        backgroundColor: "#0ea5a4",
-                        border: "none",
-                        boxShadow: "0 4px 15px rgba(0,0,0,0.2)",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        transition: "all 0.2s ease-in-out", // smooth transition
-                        cursor: "pointer",
-                    }}
-                    onMouseEnter={(e) => {
-                        e.currentTarget.style.transform = "scale(1.2)";
-                        e.currentTarget.style.boxShadow = "0 6px 20px rgba(0,0,0,0.3)";
-                    }}
-                    onMouseLeave={(e) => {
-                        e.currentTarget.style.transform = "scale(1)";
-                        e.currentTarget.style.boxShadow = "0 4px 15px rgba(0,0,0,0.2)";
-                    }}
-                >
-                    <FaPlus />
-                </Button>
-            </Link>
+    if (min !== null) list = list.filter(p => parsePrice(p.price) >= min);
+    if (max !== null) list = list.filter(p => parsePrice(p.price) <= max);
 
-        </div>
-    );
-};
+    switch (activeFilters.sortBy) {
+      case 'priceAsc':
+        list.sort((a, b) => parsePrice(a.price) - parsePrice(b.price));
+        break;
+      case 'priceDesc':
+        list.sort((a, b) => parsePrice(b.price) - parsePrice(a.price));
+        break;
+      case 'brandAsc':
+        list.sort((a, b) => (a.brand || '').toLowerCase().localeCompare((b.brand || '').toLowerCase()));
+        break;
+      case 'brandDesc':
+        list.sort((a, b) => (b.brand || '').toLowerCase().localeCompare((a.brand || '').toLowerCase()));
+        break;
+      default:
+        break;
+    }
 
-export default Home;
+    return list;
+  }, [products, activeFilters]);
+
+  return (
+    <div className="home-page" style={{ padding: '1rem 2rem', backgroundColor: 'var(--bg-dark)' }}>
+
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+        <h2>Products</h2>
+        <Link to="/add"><button className="btn btn-primary">Add product</button></Link>
+      </div>
+
+      {/* Pass activeFilters as initialFilters. Apply/Reset events update activeFilters. */}
+      <FilterBar
+        brands={brands}
+        initialFilters={activeFilters}
+        onApply={(newFilters) => setActiveFilters(newFilters)}
+        onReset={() => setActiveFilters({ brand: '', minPrice: '', maxPrice: '', sortBy: '' })}
+      />
+
+      <div className="product-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 12 }}>
+        {filtered.length === 0 ? (
+          <div style={{ padding: 20 }}>No products match the current filters.</div>
+        ) : (
+          filtered.map((p) => (
+            <ProductCard key={p.id} product={p} onDelete={() => onDelete(p.id)} />
+          ))
+        )}
+      </div>
+    </div>
+  );
+}
