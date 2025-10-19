@@ -82,7 +82,7 @@ export default function ViewProduct() {
         <Card.Title>{product.name}</Card.Title>
         <Card.Subtitle className="mb-2 text-muted">{product.brand}</Card.Subtitle>
         <Card.Text className="fw-bold">₹{product.price}</Card.Text>
-        <Card.Text className="text-muted">{product.specs}</Card.Text>
+        <Card.Text >{product.specs}</Card.Text>
         <div className="d-flex justify-content-between align-items-center">
           <Button as={Link} to={`/edit/${product.id}`} variant="warning">
             Edit
