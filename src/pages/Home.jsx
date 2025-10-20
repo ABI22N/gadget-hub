@@ -42,13 +42,14 @@ export default function Home() {
     setError('');
     try {
       const res = await deleteGadgetAPI(id);
-      if (res?.status >= 400 || res instanceof Error || res.name === 'AxiosError') {
+      if (res?.status >= 200 || res instanceof Error || res.name === 'AxiosError') {
         throw res;
       }
       setProducts((prev) => prev.filter((p) => String(p.id) !== String(id)));
     } catch (err) {
       setError('Failed to delete product: ' + (err.response?.data?.message || err.message));
     }
+    loadProducts();
   };
 
   // Parse price
