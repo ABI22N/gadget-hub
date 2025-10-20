@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { Card, Form, Button, Row, Col, Image, Alert } from 'react-bootstrap';
 import { TextField } from '@mui/material';
@@ -13,7 +14,6 @@ export default function ProductForm({ initial = null, onSubmit }) {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  // Initialize form with initial data (for editing)
   useEffect(() => {
     if (initial) {
       setForm(initial);
@@ -21,7 +21,6 @@ export default function ProductForm({ initial = null, onSubmit }) {
     }
   }, [initial]);
 
-  // Update image preview when form changes
   useEffect(() => {
     setPreview(form.image || FALLBACK(form.name || form.brand || 'gadget'));
   }, [form.image, form.name, form.brand]);
@@ -30,8 +29,9 @@ export default function ProductForm({ initial = null, onSubmit }) {
 
   const submit = async (e) => {
     e.preventDefault();
-    if (!form.name.trim() || !form.brand.trim() || form.price === '') {
-      setError('Name, Brand, and Price are required');
+    const { name, brand, price } = form;
+    if (!name?.trim() || !brand?.trim() || price === '' || isNaN(price)) {
+      setError('Name, Brand, and a valid Price are required');
       return;
     }
     setError('');
@@ -62,17 +62,14 @@ export default function ProductForm({ initial = null, onSubmit }) {
               <Form.Label>Product Name</Form.Label>
               <Form.Control value={form.name} onChange={handle('name')} placeholder="Falcon X1" required />
             </Form.Group>
-
             <Form.Group className="mb-3">
               <Form.Label>Brand</Form.Label>
               <Form.Control value={form.brand} onChange={handle('brand')} placeholder="ApexTech" required />
             </Form.Group>
-
             <Form.Group className="mb-3">
               <Form.Label>Price (₹)</Form.Label>
               <Form.Control type="number" min="0" value={form.price} onChange={handle('price')} required />
             </Form.Group>
-
             <Form.Group className="mb-3">
               <Form.Label>Specifications</Form.Label>
               <Form.Control as="textarea" rows={3} value={form.specs} onChange={handle('specs')} />

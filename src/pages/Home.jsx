@@ -78,7 +78,7 @@ export default function Home() {
     const { brand, minPrice, maxPrice, sortBy } = activeFilters;
 
     if (brand) {
-      arr = arr.filter((p) => String(p.brand).toLowerCase() === String(brand).toLowerCase());
+      arr = arr.filter((p) => String(p.brand || '').toLowerCase() === String(brand).toLowerCase());
     }
 
     const min = parsePrice(minPrice);

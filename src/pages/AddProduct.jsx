@@ -14,20 +14,25 @@ export default function AddProduct() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!product.name.trim() || !product.brand.trim() || product.price === '') {
-      setError('Name, Brand, and Price are required');
+    const { name, brand, price } = product;
+    if (!name?.trim() || !brand?.trim() || price === '' || isNaN(price)) {
+      setError('Name, Brand, and a valid Price are required');
       return;
     }
     setError('');
     setLoading(true);
     try {
-      const response = await addGadgetAPI({ ...product, price: Number(product.price) });
+      const data = { ...product, price: Number(product.price) };
+      console.log('Sending POST request with data:', data);
+      const response = await addGadgetAPI(data);
+      console.log('API response:', response);
       if (response?.status >= 400 || response instanceof Error || response.name === 'AxiosError') {
-        throw response;
+        throw new Error(response.response?.data?.message || response.message || 'Unknown error');
       }
       navigate("/");
     } catch (err) {
-      setError('Error adding product: ' + (err.response?.data?.message || err.message));
+      console.error('Error adding product:', err);
+      setError('Error adding product: ' + (err.message || 'Failed to connect to the server'));
     } finally {
       setLoading(false);
     }
