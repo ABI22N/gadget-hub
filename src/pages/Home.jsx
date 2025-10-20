@@ -38,7 +38,7 @@ export default function Home() {
 
   // Delete handler
   const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this product?')) return;
+    // if (!window.confirm('Are you sure you want to delete this product?')) return;
     setError('');
     try {
       const res = await deleteGadgetAPI(id);
